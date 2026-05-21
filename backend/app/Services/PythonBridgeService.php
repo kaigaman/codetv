@@ -32,7 +32,7 @@ class PythonBridgeService
 
     public function getUgandaChannels(): array
     {
-        $resp = Http::timeout(30)->get("{$this->baseUrl}/api/v1/uganda/channels");
+        $resp = Http::timeout(120)->get("{$this->baseUrl}/api/v1/uganda/channels");
         return $resp->json() ?? [];
     }
 
