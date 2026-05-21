@@ -15,19 +15,55 @@ class M3UAggregatorService
     public function __construct()
     {
         $this->sources = [
+            // Global aggregators (large, may be slow)
             'iptv-org-global' => env('IPTV_ORG_GLOBAL_M3U', 'https://iptv-org.github.io/iptv/index.m3u'),
             'free-tv' => config('services.free_tv.m3u'),
             'world-ip-tv' => config('services.world_ip_tv.playlist'),
             'herbert-he' => env('HERBERT_HE_M3U', 'https://raw.githubusercontent.com/HerbertHe/iptv-sources/main/iptv.m3u'),
+            // Categories (targeted, smaller)
             'iptv-org-sports' => 'https://iptv-org.github.io/iptv/categories/sports.m3u',
+            'iptv-org-news' => 'https://iptv-org.github.io/iptv/categories/news.m3u',
+            'iptv-org-entertainment' => 'https://iptv-org.github.io/iptv/categories/entertainment.m3u',
+            'iptv-org-movies' => 'https://iptv-org.github.io/iptv/categories/movies.m3u',
+            'iptv-org-music' => 'https://iptv-org.github.io/iptv/categories/music.m3u',
+            'iptv-org-documentary' => 'https://iptv-org.github.io/iptv/categories/documentary.m3u',
+            'iptv-org-kids' => 'https://iptv-org.github.io/iptv/categories/kids.m3u',
+            'iptv-org-education' => 'https://iptv-org.github.io/iptv/categories/education.m3u',
+            'iptv-org-religious' => 'https://iptv-org.github.io/iptv/categories/religious.m3u',
+            'iptv-org-business' => 'https://iptv-org.github.io/iptv/categories/business.m3u',
+            'iptv-org-lifestyle' => 'https://iptv-org.github.io/iptv/categories/lifestyle.m3u',
+            'iptv-org-culture' => 'https://iptv-org.github.io/iptv/categories/culture.m3u',
+            'iptv-org-comedy' => 'https://iptv-org.github.io/iptv/categories/comedy.m3u',
+            'iptv-org-drama' => 'https://iptv-org.github.io/iptv/categories/drama.m3u',
+            'iptv-org-animation' => 'https://iptv-org.github.io/iptv/categories/animation.m3u',
+            'iptv-org-series' => 'https://iptv-org.github.io/iptv/categories/series.m3u',
+            'iptv-org-science' => 'https://iptv-org.github.io/iptv/categories/science.m3u',
+            'iptv-org-travel' => 'https://iptv-org.github.io/iptv/categories/travel.m3u',
+            'iptv-org-cooking' => 'https://iptv-org.github.io/iptv/categories/cooking.m3u',
+            // Countries
+            'iptv-org-uganda' => 'https://iptv-org.github.io/iptv/countries/ug.m3u',
+            'iptv-org-uk' => 'https://iptv-org.github.io/iptv/countries/gb.m3u',
+            'iptv-org-usa' => 'https://iptv-org.github.io/iptv/countries/us.m3u',
+            'iptv-org-kenya' => 'https://iptv-org.github.io/iptv/countries/ke.m3u',
+            'iptv-org-nigeria' => 'https://iptv-org.github.io/iptv/countries/ng.m3u',
+            'iptv-org-tanzania' => 'https://iptv-org.github.io/iptv/countries/tz.m3u',
         ];
     }
 
     public function syncAll(): array
     {
+        return $this->syncSelected(array_keys($this->sources));
+    }
+
+    public function syncSelected(array $sourceNames): array
+    {
         $results = [];
-        foreach ($this->sources as $name => $url) {
-            $results[$name] = $this->syncFromM3U($url, $name);
+        foreach ($sourceNames as $name) {
+            if (!isset($this->sources[$name])) {
+                $results[$name] = ['error' => "Unknown source: $name", 'count' => 0];
+                continue;
+            }
+            $results[$name] = $this->syncFromM3U($this->sources[$name], $name);
         }
         $total = array_sum(array_column($results, 'count'));
         return ['total' => $total, 'sources' => $results];
