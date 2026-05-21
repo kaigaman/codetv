@@ -1,0 +1,35 @@
+import paramiko
+H, P, U, PW = '66.212.18.106', 22, 'root', 'bC61sumTUP06JGp48o'
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect(H, port=P, username=U, password=PW, look_for_keys=False, allow_agent=False, timeout=30, banner_timeout=30)
+
+def r(c, t=60):
+    i,o,e = ssh.exec_command(c, timeout=t)
+    ec = o.channel.recv_exit_status()
+    out = o.read().decode('utf-8', errors='replace')
+    err = e.read().decode('utf-8', errors='replace')
+    clean = out.encode('ascii', errors='replace').decode()
+    if clean: print(clean[:4000])
+    if ec != 0 and err:
+        print(f'EXIT {ec}: {err[:300].encode("ascii", errors="replace").decode()}')
+
+print('=== GIT PULL ===')
+r('cd /opt/codetv && git pull 2>&1', 30)
+print('\n=== BUILD LARAVEL ===')
+r('cd /opt/codetv && docker compose build laravel 2>&1 | tail -10', 120)
+print('\n=== RESTART ===')
+r('cd /opt/codetv && docker compose up -d --no-build 2>&1', 30)
+print('\n=== RUN SYNC UGANDA ===')
+r('docker exec codetv-laravel-1 php artisan iptv:sync-m3u --sources=uganda 2>&1', 120)
+print('\n=== RUN SYNC CATEGORIES (news, entertainment, movies, music) ===')
+r('docker exec codetv-laravel-1 php artisan iptv:sync-m3u --sources=news,entertainment,movies,music 2>&1', 300)
+print('\n=== RUN SYNC MORE CATEGORIES ===')
+r('docker exec codetv-laravel-1 php artisan iptv:sync-m3u --sources=documentary,kids,education,religious,business,lifestyle,culture,comedy,drama,animation,series,science 2>&1', 300)
+print('\n=== CHANNEL STATS ===')
+r("docker exec codetv-mysql-1 mysql -ucodetv -pcodetv_pass codetv -e \"SELECT source, COUNT(*) as cnt FROM channels GROUP BY source ORDER BY cnt DESC;\" 2>/dev/null", 10)
+print('\n=== UGANDA COUNT ===')
+r("docker exec codetv-mysql-1 mysql -ucodetv -pcodetv_pass codetv -e \"SELECT c.name, co.name as country FROM channels c JOIN countries co ON c.country_id=co.id WHERE co.code='ug' LIMIT 30;\" 2>/dev/null", 10)
+print('\n=== TOTAL CHANNELS ===')
+r("docker exec codetv-mysql-1 mysql -ucodetv -pcodetv_pass codetv -e 'SELECT COUNT(*) FROM channels;' 2>/dev/null", 10)
+ssh.close()
