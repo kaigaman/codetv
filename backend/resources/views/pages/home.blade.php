@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'CODETV — Free IPTV Channels Worldwide')
+@section('title', 'CODETV — Paid TV Channels | Free 1 Month Trial')
 @section('content')
 <div x-data="{
     search: '', results: [], searching: false,
@@ -32,13 +32,13 @@
                     <span class="text-codetv-300 text-sm font-medium">Uganda-first: {{ $ugandaChannels->count() }} local channels</span>
                 </div>
                 <h1 class="text-4xl md:text-6xl font-bold mb-4">
-                    Free IPTV
+                    Code Paid TV
                     <span class="bg-gradient-to-r from-codetv-400 to-blue-500 bg-clip-text text-transparent">Channels</span>
                     <br>From Everywhere
                 </h1>
                 <p class="text-gray-400 text-lg mb-8">
-                    Watch <strong class="text-codetv-400">{{ number_format($stats['online']) }}</strong> live channels online right now.
-                    Auto-detected for your region.
+                    Start your <strong class="text-codetv-400">free 1-month trial</strong> today.
+                    Watch <strong class="text-codetv-400">{{ number_format($stats['online']) }}</strong> live channels.
                 </p>
 
                 <div class="relative max-w-xl mx-auto">
@@ -84,6 +84,36 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 @foreach($ugandaChannels as $channel)
                 <x-channel-card :channel="$channel" />
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if(isset($soccerChannels) && $soccerChannels->isNotEmpty())
+    <div class="max-w-7xl mx-auto px-4 mb-12">
+        <div class="bg-gradient-to-r from-green-900/20 to-blue-900/20 border border-green-700/20 rounded-2xl p-6 md:p-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span>⚽</span> Soccer &amp; Sports
+                    </h2>
+                    <p class="text-gray-500 text-sm mt-1">Live football, Premier League, La Liga, and more</p>
+                </div>
+                <a href="{{ route('sports') }}" class="text-codetv-400 hover:text-codetv-300 text-sm font-medium">
+                    View All Sports <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                @foreach($soccerChannels as $channel)
+                <div class="relative">
+                    <x-channel-card :channel="$channel" />
+                    @if($channel->source === 'curated')
+                    <span class="absolute top-2 left-2 px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full font-medium">
+                        ⭐ Featured
+                    </span>
+                    @endif
+                </div>
                 @endforeach
             </div>
         </div>

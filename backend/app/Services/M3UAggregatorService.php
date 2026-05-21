@@ -19,6 +19,7 @@ class M3UAggregatorService
             'free-tv' => config('services.free_tv.m3u'),
             'world-ip-tv' => config('services.world_ip_tv.playlist'),
             'herbert-he' => env('HERBERT_HE_M3U', 'https://raw.githubusercontent.com/HerbertHe/iptv-sources/main/iptv.m3u'),
+            'iptv-org-sports' => 'https://iptv-org.github.io/iptv/categories/sports.m3u',
         ];
     }
 

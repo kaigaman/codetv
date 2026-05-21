@@ -14,7 +14,7 @@ class M3UGenerator:
         lines = [
             "#EXTM3U",
             f'#PLAYLIST: CODETV - {country.upper()}',
-            f'#DESCRIPTION: Free IPTV channels for {country.upper()}',
+            f'#DESCRIPTION: Code Paid TV channels for {country.upper()}',
             f'#GENERATED: {datetime.utcnow().isoformat()}Z',
             f'#SOURCE: CODETV Platform',
             "",

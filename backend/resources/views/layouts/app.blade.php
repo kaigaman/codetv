@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CODETV') — Free IPTV Channels</title>
+    <title>@yield('title', 'CODETV') — Code Paid TV | Free 1 Month Trial</title>
     <link rel="icon" type="image/png" href="/images/logo.png">
     <link rel="apple-touch-icon" href="/images/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -133,7 +133,7 @@
             <div class="flex items-center justify-center gap-2 mb-2">
                 <img src="/images/logo.png" alt="" class="h-8 w-8 rounded">
             </div>
-            <p class="text-gray-500 text-sm">Free IPTV channels from around the world. Not affiliated with any content provider.</p>
+            <p class="text-gray-500 text-sm">Code Paid TV channels from around the world. Start your free 1-month trial today.</p>
             <p class="text-gray-600 text-xs mt-2">&copy; {{ date('Y') }} CODETV. Developed by William Kaiga. All streams are publicly available.</p>
         </div>
     </footer>

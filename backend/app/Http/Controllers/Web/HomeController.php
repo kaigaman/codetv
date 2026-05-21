@@ -64,6 +64,27 @@ class HomeController extends Controller
             ->orderBy('name')
             ->get();
 
+        $sportsCategory = Category::where('slug', 'sports')->first();
+        $soccerKeywords = ['football', 'soccer', 'premier league', 'laliga',
+            'serie a', 'bundesliga', 'ligue 1', 'champions league',
+            'europa league', 'uefa', 'fifa'];
+
+        $soccerChannels = collect();
+        if ($sportsCategory) {
+            $soccerChannels = Channel::active()
+                ->online()
+                ->with(['country', 'category'])
+                ->where(function ($q) use ($sportsCategory, $soccerKeywords) {
+                    $q->where('category_id', $sportsCategory->id);
+                    foreach ($soccerKeywords as $kw) {
+                        $q->orWhere('name', 'like', "%{$kw}%");
+                    }
+                })
+                ->inRandomOrder()
+                ->limit(12)
+                ->get();
+        }
+
         $stats = [
             'channels' => $this->validator->getTotalCount(),
             'online' => $this->validator->getOnlineCount(),
@@ -71,7 +92,7 @@ class HomeController extends Controller
         ];
 
         return view('pages.home', compact(
-            'ugandaChannels', 'featured', 'internationalChannels', 'countries',
+            'ugandaChannels', 'featured', 'internationalChannels', 'soccerChannels', 'countries',
             'categories', 'stats'
         ));
     }
@@ -211,39 +232,69 @@ class HomeController extends Controller
 
     public function sports(Request $request): View
     {
-        $football = $request->boolean('football');
+        $league = $request->get('league');
         $countryCode = $request->get('country');
+        $search = $request->get('search');
 
-        $query = Channel::active()->with(['country', 'category']);
+        $sportsCategory = Category::where('slug', 'sports')->first();
 
-        if ($football) {
-            $query->where(function ($q) {
-                $keywords = ['football', 'soccer', 'premier league', 'laliga',
-                             'serie a', 'bundesliga', 'ligue 1', 'champions league',
-                             'europa league', 'uefa', 'fifa'];
-                foreach ($keywords as $kw) {
+        $query = Channel::active()
+            ->online()
+            ->with(['country', 'category']);
+
+        $leagueKeywords = [
+            'premier-league' => ['premier league', 'epl'],
+            'laliga' => ['laliga', 'la liga'],
+            'serie-a' => ['serie a'],
+            'bundesliga' => ['bundesliga'],
+            'ligue-1' => ['ligue 1'],
+            'uefa' => ['champions league', 'europa league', 'uefa', 'european cup'],
+        ];
+
+        if ($league && isset($leagueKeywords[$league])) {
+            $query->where(function ($q) use ($leagueKeywords, $league) {
+                foreach ($leagueKeywords[$league] as $kw) {
                     $q->orWhere('name', 'like', "%{$kw}%");
                 }
             });
+        } elseif ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
         } else {
-            $query->whereHas('category', fn($q) => $q->where('slug', 'like', '%sport%'));
+            $soccerKeywords = ['football', 'soccer', 'premier league', 'laliga',
+                'serie a', 'bundesliga', 'ligue 1', 'champions league',
+                'europa league', 'uefa', 'fifa', 'world cup', 'sport',
+                'espn', 'sky sport', 'bein sport', 'dazn', 'eurosport'];
+
+            $query->where(function ($q) use ($sportsCategory, $soccerKeywords) {
+                if ($sportsCategory) {
+                    $q->orWhere('category_id', $sportsCategory->id);
+                }
+                foreach ($soccerKeywords as $kw) {
+                    $q->orWhere('name', 'like', "%{$kw}%");
+                }
+            });
         }
 
         if ($countryCode) {
             $query->byCountry($countryCode);
         }
 
-        $channels = $query->orderBy('name')->limit(100)->get();
-        $online = $channels->where('is_online', true)->count();
+        $channels = $query->orderBy('name')->paginate(48);
+        $online = Channel::active()->online()
+            ->whereHas('category', fn($q) => $q->where('slug', 'sports'))
+            ->count();
 
         $countriesList = Cache::remember('sports_countries', 3600, fn() =>
             Country::where('is_active', true)
-                ->whereHas('channels', fn($q) => $q->whereHas('category', fn($cq) => $cq->where('slug', 'like', '%sport%')))
+                ->whereHas('channels', fn($q) => $q->active()->online()
+                    ->whereHas('category', fn($cq) => $cq->where('slug', 'sports')))
                 ->orderBy('name')
                 ->get()
         );
 
-        return view('pages.sports', compact('channels', 'online', 'countriesList'));
+        return view('pages.sports', compact('channels', 'online', 'countriesList', 'league', 'search'));
     }
 
     public function international(Request $request): View
