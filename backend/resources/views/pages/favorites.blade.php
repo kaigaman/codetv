@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'My Favorites — CODETV')
+@section('title', 'My Favorites — Mamboleo TV')
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-10"
     x-data="{

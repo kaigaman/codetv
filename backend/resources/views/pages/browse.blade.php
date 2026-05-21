@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Browse Channels — CODETV')
+@section('title', 'Browse Channels — Mamboleo TV')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8"

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'TV Guide — CODETV')
+@section('title', 'TV Guide — Mamboleo TV')
 @section('content')
 <div x-data="{
     channels: @json($channels),

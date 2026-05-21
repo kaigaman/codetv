@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'CODETV — Paid TV Channels | Free 1 Month Trial')
+@section('title', 'Mamboleo TV — Paid TV Channels | Free 1 Month Trial')
 @section('content')
 <div x-data="{
     search: '', results: [], searching: false,
@@ -24,7 +24,7 @@
         else this.favorites.delete(channelId);
     }
 }">
-    <div class="relative bg-gradient-to-b from-gray-900 via-gray-950 to-gray-950">
+    <div class="relative bg-gradient-to-b from-codetv-900 via-codetv-950 to-codetv-950">
         <div class="max-w-7xl mx-auto px-4 py-16 md:py-24">
             <div class="text-center max-w-3xl mx-auto">
                 <div class="inline-flex items-center gap-2 bg-codetv-900/30 border border-codetv-700/30 rounded-full px-4 py-1.5 mb-6">
@@ -32,8 +32,8 @@
                     <span class="text-codetv-300 text-sm font-medium">Uganda-first: {{ $ugandaChannels->count() }} local channels</span>
                 </div>
                 <h1 class="text-4xl md:text-6xl font-bold mb-4">
-                    Code Paid TV
-                    <span class="bg-gradient-to-r from-codetv-400 to-blue-500 bg-clip-text text-transparent">Channels</span>
+                    Mamboleo
+                    <span class="bg-gradient-to-r from-codetv-400 to-blue-500 bg-clip-text text-transparent">TV</span>
                     <br>From Everywhere
                 </h1>
                 <p class="text-gray-400 text-lg mb-8">
@@ -44,20 +44,20 @@
                 <div class="relative max-w-xl mx-auto">
                     <input type="text" x-model="search" @input.debounce="doSearch"
                         placeholder="Search channels, countries..."
-                        class="w-full bg-gray-800 border border-gray-700 rounded-xl px-5 py-3.5 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-codetv-500 focus:ring-1 focus:ring-codetv-500 transition">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        class="w-full bg-codetv-900/80 border border-codetv-600 rounded-xl px-5 py-3.5 pl-12 text-white placeholder-codetv-300 focus:outline-none focus:border-codetv-400 focus:ring-1 focus:ring-codetv-400 transition">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-codetv-400"></i>
                     <div x-show="results.length > 0 || searching" x-cloak
-                        class="absolute top-full mt-2 w-full bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50">
+                        class="absolute top-full mt-2 w-full bg-codetv-900 border border-codetv-700 rounded-xl overflow-hidden shadow-2xl z-50">
                         <template x-if="searching">
-                            <div class="p-4 text-center text-gray-400"><i class="fas fa-spinner fa-spin"></i> Searching...</div>
+                            <div class="p-4 text-center text-codetv-300"><i class="fas fa-spinner fa-spin"></i> Searching...</div>
                         </template>
                         <template x-for="ch in results.channels" :key="ch.id">
                             <a :href="'/watch/' + ch.slug"
-                                class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700/50 transition border-b border-gray-700/50 last:border-0">
-                                <img :src="ch.logo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(ch.name || 'TV') + '&size=40&background=random&color=fff&bold=true'" class="w-8 h-8 rounded object-cover bg-gray-900" alt="">
+                                class="flex items-center gap-3 px-4 py-3 hover:bg-codetv-800/50 transition border-b border-codetv-700/50 last:border-0">
+                                <img :src="ch.logo_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(ch.name || 'TV') + '&size=40&background=random&color=fff&bold=true'" class="w-8 h-8 rounded object-cover bg-codetv-950" alt="">
                                 <div class="text-left">
                                     <div class="text-sm font-medium" x-text="ch.name"></div>
-                                    <div class="text-xs text-gray-500" x-text="ch.country?.name || ''"></div>
+                                    <div class="text-xs text-codetv-400" x-text="ch.country?.name || ''"></div>
                                 </div>
                             </a>
                         </template>

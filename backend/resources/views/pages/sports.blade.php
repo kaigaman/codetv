@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sports Channels — CODETV')
+@section('title', 'Sports Channels — Mamboleo TV')
 
 @section('content')
 <div class="bg-gradient-to-b from-blue-900/10 via-gray-950 to-gray-950">
