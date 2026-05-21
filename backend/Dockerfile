@@ -23,4 +23,6 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev \
 
 EXPOSE 80
 
-CMD php artisan serve --host=0.0.0.0 --port=80
+RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs
+
+CMD php artisan optimize:clear 2>/dev/null; php artisan serve --host=0.0.0.0 --port=80
