@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', $channel->name . ' — Mamboleo TV')
 
-@section('head')
+@push('head')
 <meta name="description" content="Watch {{ $channel->name }} live free on Mamboleo TV">
 <meta property="og:title" content="{{ $channel->name }} — Mamboleo TV">
 <meta property="og:description" content="Watch {{ $channel->name }} live free">
