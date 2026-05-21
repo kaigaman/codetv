@@ -45,6 +45,9 @@ celerybeat-schedule*
 # Docker
 docker-compose.override.yml
 
+# Temp debug scripts
+*.py
+!python/**/*.py
 # Env
 .env
 .env.local
