@@ -1,0 +1,119 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: codetv
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-codetv_secret}
+      MYSQL_USER: codetv
+      MYSQL_PASSWORD: ${DB_PASSWORD:-codetv_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - codetv
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - codetv
+    restart: unless-stopped
+
+  laravel:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - m3u_output:/var/www/public/m3u
+    environment:
+      APP_ENV: production
+      APP_DEBUG: false
+      DB_HOST: mysql
+      DB_DATABASE: codetv
+      DB_USERNAME: codetv
+      DB_PASSWORD: ${DB_PASSWORD:-codetv_pass}
+      REDIS_HOST: redis
+      PYTHON_API: http://python:8000
+    networks:
+      - codetv
+    restart: unless-stopped
+
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - m3u_output:/app/output
+    environment:
+      REDIS_HOST: redis
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: codetv
+      MYSQL_USER: codetv
+      MYSQL_PASSWORD: ${DB_PASSWORD:-codetv_pass}
+    networks:
+      - codetv
+    restart: unless-stopped
+
+  celery:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    command: celery -A api.tasks worker --loglevel=info
+    depends_on:
+      - redis
+      - mysql
+    environment:
+      REDIS_HOST: redis
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: codetv
+      MYSQL_USER: codetv
+      MYSQL_PASSWORD: ${DB_PASSWORD:-codetv_pass}
+    networks:
+      - codetv
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    command: celery -A api.tasks beat --loglevel=info --scheduler celery.beat.PersistentScheduler
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+    networks:
+      - codetv
+    restart: unless-stopped
+
+  flower:
+    image: mher/flower
+    ports:
+      - "5555:5555"
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+    depends_on:
+      - redis
+    networks:
+      - codetv
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  m3u_output:
+
+networks:
+  codetv:
+    driver: bridge

@@ -1,0 +1,172 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: codetv
+      MYSQL_ROOT_PASSWORD: codetv_secret
+      MYSQL_USER: codetv
+      MYSQL_PASSWORD: codetv_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - codetv
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - codetv
+
+  laravel:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./backend/app:/var/www/app
+      - ./backend/resources:/var/www/resources
+      - ./backend/routes:/var/www/routes
+      - ./backend/config:/var/www/config
+      - ./backend/database:/var/www/database
+      - m3u_output:/var/www/public/m3u
+    command: sh -c "php artisan optimize:clear && php artisan serve --host=0.0.0.0 --port=80"
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: codetv
+      DB_USERNAME: codetv
+      DB_PASSWORD: codetv_pass
+      REDIS_HOST: redis
+      PYTHON_API: http://python:8000
+      KPTV_FAST_API: http://kptv-fast:8080
+      IPTV_API_URL: http://iptv-api:8080
+    networks:
+      - codetv
+
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./python:/app
+      - m3u_output:/app/output
+    environment:
+      REDIS_HOST: redis
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: codetv
+      MYSQL_USER: codetv
+      MYSQL_PASSWORD: codetv_pass
+    networks:
+      - codetv
+
+  celery:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    command: celery -A api.tasks worker --loglevel=info
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./python:/app
+    environment:
+      REDIS_HOST: redis
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: codetv
+      MYSQL_USER: codetv
+      MYSQL_PASSWORD: codetv_pass
+    networks:
+      - codetv
+
+  celery-beat:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    command: celery -A api.tasks beat --loglevel=info --scheduler celery.beat.PersistentScheduler
+    depends_on:
+      - redis
+    volumes:
+      - ./python:/app
+    environment:
+      REDIS_HOST: redis
+    networks:
+      - codetv
+
+  flower:
+    image: mher/flower
+    ports:
+      - "5555:5555"
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+    depends_on:
+      - redis
+    networks:
+      - codetv
+
+  # kptv-fast: aggregates 20+ free FAST services (Pluto, Plex, Samsung, Tubi, Xumo, DistroTV, LG, Roku, etc.)
+  kptv-fast:
+    image: ghcr.io/kpirnie/kptv-fast:latest
+    ports:
+      - "8081:8080"
+    environment:
+      CACHE_DURATION: 7200
+      WARM_CACHE_ON_STARTUP: "true"
+      STARTUP_CACHE_DELAY: 10
+      WARM_EPG_ON_STARTUP: "true"
+      MAX_WORKERS: 5
+      PROVIDER_TIMEOUT: 60
+      ENABLED_PROVIDERS: all
+      GIT_COUNTRY: all
+      LG_COUNTRY: all
+      DEBUG: "false"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - codetv
+
+  # Guovin/iptv-api: auto-collects, filters, validates, and generates playlists from 100+ sources
+  iptv-api:
+    image: guovern/iptv-api:latest
+    ports:
+      - "8082:8080"
+    volumes:
+      - iptv_config:/iptv-api/config
+      - iptv_output:/iptv-api/output
+    environment:
+      PUBLIC_SCHEME: "http"
+      PUBLIC_DOMAIN: "iptv-api"
+      PUBLIC_PORT: "8082"
+      NGINX_HTTP_PORT: "8080"
+      CDN_URL: ""
+      HTTP_PROXY: ""
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    networks:
+      - codetv
+
+volumes:
+  mysql_data:
+  m3u_output:
+  iptv_config:
+  iptv_output:
+
+networks:
+  codetv:
+    driver: bridge
