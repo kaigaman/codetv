@@ -176,7 +176,7 @@ class IPTVService
                         'category_id' => $category?->id,
                         'tvg_id' => $current['tvg_id'],
                         'tvg_name' => $current['name'],
-                        'logo_url' => $current['logo'],
+                        'logo_url' => $current['logo'] ? (strlen($current['logo']) > 1000 ? substr($current['logo'], 0, 1000) : $current['logo']) : null,
                         'source' => 'iptv-org-m3u',
                         'is_online' => true,
                         'is_active' => true,

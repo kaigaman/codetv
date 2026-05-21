@@ -186,7 +186,7 @@ class IPTVApiService
                 'category_id' => $category?->id,
                 'tvg_id' => $meta['tvg_id'],
                 'tvg_name' => $meta['name'],
-                'logo_url' => $meta['logo'],
+                'logo_url' => $meta['logo'] ? (strlen($meta['logo']) > 1000 ? substr($meta['logo'], 0, 1000) : $meta['logo']) : null,
                 'source' => $source,
                 'is_online' => true,
                 'is_active' => true,
