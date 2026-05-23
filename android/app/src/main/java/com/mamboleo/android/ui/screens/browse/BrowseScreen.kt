@@ -34,7 +34,6 @@ fun BrowseScreen(
     viewModel: BrowseViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var showCountrySheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {

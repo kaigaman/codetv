@@ -101,14 +101,6 @@ dependencies {
     // Image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    // Room local storage
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-
-    // DataStore preferences
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-
     // Accompanist
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
