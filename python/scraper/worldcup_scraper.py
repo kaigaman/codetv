@@ -26,7 +26,7 @@ BROADCASTER_STREAMS = [
     {"name": "ZDF Mediathek", "country": "DE", "type": "free", "url": "https://www.zdf.de"},
     {"name": "NOS", "country": "NL", "type": "free", "url": "https://nos.nl"},
     {"name": "RAI Play", "country": "IT", "type": "free", "url": "https://www.raiplay.it"},
-    {"name": "RTVE", "country": "ES", "type": "free", "type": "free", "url": "https://www.rtve.es"},
+    {"name": "RTVE", "country": "ES", "type": "free", "url": "https://www.rtve.es"},
     {"name": "TVP", "country": "PL", "type": "free", "url": "https://tvp.pl"},
     {"name": "CazéTV", "country": "BR", "type": "free", "url": "https://www.youtube.com/@CazeTV"},
 ]
