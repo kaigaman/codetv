@@ -26,4 +26,20 @@ return [
     'logos' => [
         'url' => env('IPTV_ORG_LOGOS', 'https://iptv-org.github.io/api/logos.json'),
     ],
+
+    'eight08' => [
+        'base_url' => env('EIGHT08_URL', 'https://808ball2.com'),
+        'enabled' => env('EIGHT08_ENABLED', true),
+    ],
+
+    'worldcup' => [
+        'enabled' => env('WORLDCUP_ENABLED', true),
+        'season_start' => '2026-06-11',
+        'season_end' => '2026-07-19',
+    ],
+
+    'proxy' => [
+        'enabled' => env('PROXY_ENABLED', true),
+        'rotation_interval' => env('PROXY_ROTATION_INTERVAL', 300),
+    ],
 ];

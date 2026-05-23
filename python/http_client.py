@@ -12,6 +12,7 @@ _config = {
     "conn_limit_per_host": 10,
     "retries": 3,
     "retry_delay": 1.0,
+    "proxy": None,
 }
 
 
@@ -40,11 +41,12 @@ async def get_session() -> aiohttp.ClientSession:
     return _session
 
 
-async def fetch(url: str, method: str = "GET", **kwargs) -> Optional[aiohttp.ClientResponse]:
+async def fetch(url: str, method: str = "GET", proxy: Optional[str] = None, **kwargs) -> Optional[aiohttp.ClientResponse]:
     session = await get_session()
+    effective_proxy = proxy or _config.get("proxy")
     for attempt in range(_config["retries"]):
         try:
-            resp = await session.request(method, url, **kwargs)
+            resp = await session.request(method, url, proxy=effective_proxy, **kwargs)
             if resp.status < 500 or attempt == _config["retries"] - 1:
                 return resp
         except (aiohttp.ClientError, asyncio.TimeoutError) as e:

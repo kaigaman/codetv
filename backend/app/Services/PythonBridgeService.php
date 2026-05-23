@@ -77,4 +77,46 @@ class PythonBridgeService
             return ['status' => 'unreachable', 'error' => $e->getMessage()];
         }
     }
+
+    public function getEight08Channels(): array
+    {
+        try {
+            $resp = Http::timeout(60)->get("{$this->baseUrl}/api/v1/eight08/channels");
+            return $resp->json() ?? ['channels' => [], 'total' => 0];
+        } catch (\Exception $e) {
+            return ['channels' => [], 'total' => 0, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function getBeinChannels(): array
+    {
+        try {
+            $resp = Http::timeout(60)->get("{$this->baseUrl}/api/v1/bein/channels");
+            return $resp->json() ?? ['channels' => [], 'total' => 0];
+        } catch (\Exception $e) {
+            return ['channels' => [], 'total' => 0, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function getWorldCupMatches(): array
+    {
+        try {
+            $resp = Http::timeout(60)->get("{$this->baseUrl}/api/v1/worldcup/matches");
+            return $resp->json() ?? ['matches' => [], 'broadcasters' => [], 'total_matches' => 0];
+        } catch (\Exception $e) {
+            return ['matches' => [], 'broadcasters' => [], 'total_matches' => 0, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function checkStreamWithProxy(string $url): array
+    {
+        try {
+            $resp = Http::timeout(30)->post("{$this->baseUrl}/api/v1/stream/check-with-proxy", [
+                'url' => $url,
+            ]);
+            return $resp->json() ?? ['is_online' => false, 'error' => 'no_response'];
+        } catch (\Exception $e) {
+            return ['is_online' => false, 'error' => $e->getMessage()];
+        }
+    }
 }

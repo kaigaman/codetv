@@ -31,6 +31,99 @@ async def check_stream(req: StreamCheckRequest):
     return result
 
 
+@router.post("/stream/check-with-proxy")
+async def check_stream_with_proxy(req: StreamCheckRequest):
+    from proxy_manager import get_working_proxy
+    proxy = await get_working_proxy()
+    checker = StreamChecker()
+    result = await checker.check_single(req.url, req.timeout)
+    result["proxy_used"] = bool(proxy)
+    return result
+
+
+@router.get("/eight08/channels")
+async def get_eight08_channels():
+    from scraper.eight08_scraper import Eight08Scraper
+    scraper = Eight08Scraper()
+    try:
+        channels = await scraper.get_live_matches()
+        return {"source": "808-ecosystem", "channels": channels, "total": len(channels)}
+    finally:
+        await scraper.close()
+
+
+@router.post("/eight08/scrape")
+async def scrape_eight08(background_tasks: BackgroundTasks):
+    from scraper.eight08_scraper import Eight08Scraper
+    async def run():
+        scraper = Eight08Scraper()
+        try:
+            await scraper.get_all_channels()
+        finally:
+            await scraper.close()
+    background_tasks.add_task(run)
+    return {"status": "started", "message": "Scraping 808 ecosystem in background"}
+
+
+@router.get("/bein/channels")
+async def get_be_in_channels():
+    from scraper.bein_scraper import BeinScraper
+    scraper = BeinScraper()
+    try:
+        channels = await scraper.get_all_channels()
+        return {"category": "bein_sports", "channels": channels, "total": len(channels)}
+    finally:
+        await scraper.close()
+
+
+@router.post("/bein/scrape")
+async def scrape_be_in(background_tasks: BackgroundTasks):
+    from scraper.bein_scraper import BeinScraper
+    async def run():
+        scraper = BeinScraper()
+        try:
+            await scraper.get_all_channels()
+        finally:
+            await scraper.close()
+    background_tasks.add_task(run)
+    return {"status": "started", "message": "Scraping beIN channels in background"}
+
+
+@router.get("/worldcup/matches")
+async def get_worldcup_matches():
+    from scraper.worldcup_scraper import WorldCupScraper
+    scraper = WorldCupScraper()
+    try:
+        data = await scraper.get_all_matches()
+        return data
+    finally:
+        await scraper.close()
+
+
+@router.get("/worldcup/broadcasters")
+async def get_worldcup_broadcasters():
+    from scraper.worldcup_scraper import WorldCupScraper
+    scraper = WorldCupScraper()
+    try:
+        broadcasters = await scraper.get_broadcaster_guide()
+        return {"broadcasters": broadcasters, "total": len(broadcasters)}
+    finally:
+        await scraper.close()
+
+
+@router.post("/worldcup/scrape")
+async def scrape_worldcup(background_tasks: BackgroundTasks):
+    from scraper.worldcup_scraper import WorldCupScraper
+    async def run():
+        scraper = WorldCupScraper()
+        try:
+            await scraper.get_all_matches()
+        finally:
+            await scraper.close()
+    background_tasks.add_task(run)
+    return {"status": "started", "message": "Scraping World Cup matches in background"}
+
+
 @router.get("/uganda/channels")
 async def get_ugandan_channels():
     from scraper.uganda_scraper import UgandaScraper

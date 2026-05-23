@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Channel;
 use App\Models\Country;
 use App\Models\Category;
+use App\Services\PythonBridgeService;
 use App\Services\StreamValidatorService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -138,7 +139,7 @@ class HomeController extends Controller
             $query->search($search);
         }
 
-        $channels = $query->orderBy('name')->paginate(48);
+        $channels = $query->orderBy('is_online', 'desc')->orderBy('name')->paginate(48);
 
         $countries = Country::where('is_active', true)
             ->withCount(['channels' => fn($q) => $q->active()->online()])
@@ -281,7 +282,7 @@ class HomeController extends Controller
             $query->byCountry($countryCode);
         }
 
-        $channels = $query->orderBy('name')->paginate(48);
+        $channels = $query->orderBy('is_online', 'desc')->orderBy('name')->paginate(48);
         $online = Channel::active()->online()
             ->whereHas('category', fn($q) => $q->where('slug', 'sports'))
             ->count();
@@ -319,7 +320,7 @@ class HomeController extends Controller
             $query->search($search);
         }
 
-        $channels = $query->orderBy('name')->paginate(48);
+        $channels = $query->orderBy('is_online', 'desc')->orderBy('name')->paginate(48);
         $online = Channel::active()->online()->count();
 
         $countriesList = Cache::remember('intl_countries_all', 3600, fn() =>
@@ -340,6 +341,30 @@ class HomeController extends Controller
         return view('pages.international', compact(
             'channels', 'online', 'countriesList', 'categories',
             'countryCode', 'categorySlug', 'search'
+        ));
+    }
+
+    public function worldcup(): View
+    {
+        $pythonBridge = app(PythonBridgeService::class);
+        $wcData = $pythonBridge->getWorldCupMatches();
+
+        $matches = $wcData['matches'] ?? [];
+        $broadcasters = $wcData['broadcasters'] ?? [];
+
+        $featuredCategory = Category::where('slug', 'sports')->first();
+        $sportsChannels = collect();
+        if ($featuredCategory) {
+            $sportsChannels = Channel::active()
+                ->online()
+                ->where('category_id', $featuredCategory->id)
+                ->inRandomOrder()
+                ->limit(12)
+                ->get();
+        }
+
+        return view('pages.worldcup', compact(
+            'matches', 'broadcasters', 'sportsChannels'
         ));
     }
 }

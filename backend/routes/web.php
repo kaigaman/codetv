@@ -14,6 +14,7 @@ Route::get('/tv-guide', [HomeController::class, 'guide'])->name('guide');
 Route::get('/favorites', [HomeController::class, 'favorites'])->name('favorites');
 Route::get('/sports', [HomeController::class, 'sports'])->name('sports');
 Route::get('/international', [HomeController::class, 'international'])->name('international');
+Route::get('/worldcup', [HomeController::class, 'worldcup'])->name('worldcup');
 
 Route::get('/m3u/uganda-verified.m3u8', function () {
     $pythonApi = config('services.python_api.url');

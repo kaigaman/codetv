@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
+RUN playwright install chromium && playwright install-deps
+
 WORKDIR /app
 
 COPY requirements.txt .

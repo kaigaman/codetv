@@ -41,6 +41,12 @@
             <a href="{{ route('sports', ['league' => 'uefa']) }}" class="px-4 py-2 @if($league === 'uefa') bg-blue-600 text-white @else bg-gray-800 hover:bg-gray-700 @endif rounded-full text-sm transition">
                 <i class="fas fa-trophy mr-1"></i> UEFA
             </a>
+            <a href="{{ route('sports') }}?search=bein" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-full text-sm transition">
+                <i class="fas fa-satellite mr-1"></i> beIN Sports
+            </a>
+            <a href="{{ route('worldcup') }}" class="px-4 py-2 bg-yellow-600/20 text-yellow-400 hover:bg-yellow-600/30 rounded-full text-sm transition">
+                <i class="fas fa-trophy mr-1"></i> World Cup 2026
+            </a>
         </div>
 
         <div class="flex flex-wrap gap-2 mb-8 items-center">

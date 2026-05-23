@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.CODETV" parent="android:Theme.Material.NoActionBar">
-        <item name="android:statusBarColor">#FF030712</item>
-        <item name="android:navigationBarColor">#FF030712</item>
+    <style name="Theme.MamboleoTV" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#FF060E20</item>
+        <item name="android:navigationBarColor">#FF060E20</item>
     </style>
 </resources>

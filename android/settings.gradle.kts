@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CODETV"
+rootProject.name = "Mamboleo TV"
 include(":app")

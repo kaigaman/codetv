@@ -9,17 +9,22 @@ SPORTS_SOURCES = [
     {"name": "iptv-org-sports", "url": "https://iptv-org.github.io/iptv/categories/sports.m3u", "type": "m3u"},
     {"name": "iptv-org-football", "url": "https://iptv-org.github.io/iptv/categories/football.m3u", "type": "m3u"},
     {"name": "Free-TV Sports", "url": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8", "type": "m3u-filtered"},
+    {"name": "world-ip-tv", "url": "https://romaxa55.github.io/world_ip_tv/output/index.m3u", "type": "m3u-filtered"},
+    {"name": "herbert-he-iptv", "url": "https://raw.githubusercontent.com/HerbertHe/iptv-sources/main/iptv.m3u", "type": "m3u-filtered"},
 ]
 
 SPORTS_KEYWORDS = [
     "sport", "football", "soccer", "espn", "sky sport", "bt sport",
-    "bein sport", "elevensport", "supersport", "dazn", "optus sport",
+    "bein sport", "beın sport", "elevensport", "supersport", "dazn", "optus sport",
     "nfl", "nba", "mlb", "nhl", "ufc", "wwe", "f1", "motogp",
     "tennis", "cricket", "rugby", "golf", "boxing", "mma",
     "premier league", "laliga", "serie a", "bundesliga", "ligue 1",
     "uefa", "champions league", "europa league",
     "olympic", "formula", "moto", "nascar",
     "star sport", "sport tv", "canal+ sport",
+    "s sport", "tabii spor", "tivibu spor",
+    "bein", "beın", "be in sport",
+    "world cup", "fifa", "wc 2026", "worldcup",
 ]
 
 

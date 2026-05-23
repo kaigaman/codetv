@@ -6,27 +6,27 @@ plugins {
 }
 
 android {
-    namespace = "com.codetv.android"
-    compileSdk = 34
+    namespace = "com.mamboleo.android"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.codetv.android"
+        applicationId = "com.mamboleo.android"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
-        buildConfigField("String", "DEVELOPER", "\"William Kaiga\"")
+        buildConfigField("String", "DEVELOPER", "\"Mamboleo TV\"")
 
-        buildConfigField("String", "API_BASE_URL", "\"https://codetv.app/api/\"")
-        buildConfigField("String", "M3U_BASE_URL", "\"https://codetv.app/m3u/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://mamboleo.online/api/\"")
+        buildConfigField("String", "M3U_BASE_URL", "\"https://mamboleo.online/m3u/\"")
     }
 
     flavorDimensions += "environment"
     productFlavors {
         create("production") {
             dimension = "environment"
-            buildConfigField("String", "API_BASE_URL", "\"https://codetv.app/api/\"")
-            buildConfigField("String", "M3U_BASE_URL", "\"https://codetv.app/m3u/\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://mamboleo.online/api/\"")
+            buildConfigField("String", "M3U_BASE_URL", "\"https://mamboleo.online/m3u/\"")
         }
         create("development") {
             dimension = "environment"

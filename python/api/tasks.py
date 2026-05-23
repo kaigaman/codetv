@@ -30,6 +30,18 @@ celery_app.conf.update(
             "task": "api.tasks.fetch_epg_data",
             "schedule": crontab(minute="30", hour="*/4"),
         },
+        "scrape-bein-channels": {
+            "task": "api.tasks.scrape_bein_channels",
+            "schedule": crontab(minute="0", hour="*/6"),
+        },
+        "scrape-eight08-channels": {
+            "task": "api.tasks.scrape_eight08_channels",
+            "schedule": crontab(minute="*/30"),
+        },
+        "scrape-worldcup-matches": {
+            "task": "api.tasks.scrape_worldcup_matches",
+            "schedule": crontab(minute="*/15"),
+        },
     },
 )
 
@@ -59,6 +71,54 @@ def fetch_epg_data():
         fetcher = EPGFetcher()
         result = await fetcher.fetch_for_country("ug")
         return {"success": result}
+
+    return asyncio.run(run())
+
+
+@celery_app.task
+def scrape_bein_channels():
+    from scraper.bein_scraper import BeinScraper
+    import asyncio
+
+    async def run():
+        scraper = BeinScraper()
+        try:
+            channels = await scraper.get_all_channels()
+            return {"scraped": len(channels)}
+        finally:
+            await scraper.close()
+
+    return asyncio.run(run())
+
+
+@celery_app.task
+def scrape_eight08_channels():
+    from scraper.eight08_scraper import Eight08Scraper
+    import asyncio
+
+    async def run():
+        scraper = Eight08Scraper()
+        try:
+            channels = await scraper.get_live_matches()
+            return {"scraped": len(channels)}
+        finally:
+            await scraper.close()
+
+    return asyncio.run(run())
+
+
+@celery_app.task
+def scrape_worldcup_matches():
+    from scraper.worldcup_scraper import WorldCupScraper
+    import asyncio
+
+    async def run():
+        scraper = WorldCupScraper()
+        try:
+            data = await scraper.get_all_matches()
+            return {"matches": data["total_matches"], "broadcasters": len(data["broadcasters"])}
+        finally:
+            await scraper.close()
 
     return asyncio.run(run())
 

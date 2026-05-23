@@ -10,19 +10,26 @@ from loguru import logger
 
 
 class StreamChecker:
-    async def check_single(self, url: str, timeout: int = 15) -> dict:
+    async def check_single(self, url: str, timeout: int = 15, use_proxy: bool = False) -> dict:
         parsed = urlparse(url)
         if not parsed.scheme or not parsed.netloc:
             return {"url": url, "is_online": False, "error": "invalid_url"}
 
         start = time.time()
+        proxy = None
+        if use_proxy:
+            try:
+                from proxy_manager import get_working_proxy
+                proxy = await get_working_proxy()
+            except Exception:
+                pass
 
         try:
-            resp = await fetch(url, method="GET")
+            resp = await fetch(url, method="GET", proxy=proxy)
             if resp is None:
-                return {"url": url, "is_online": False, "error": "unreachable"}
+                return {"url": url, "is_online": False, "error": "unreachable", "proxy_used": bool(proxy)}
         except Exception as e:
-            return {"url": url, "is_online": False, "error": str(e)[:100]}
+            return {"url": url, "is_online": False, "error": str(e)[:100], "proxy_used": bool(proxy)}
 
         latency = (time.time() - start) * 1000
         status = resp.status

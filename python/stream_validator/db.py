@@ -192,6 +192,14 @@ def reset_all_online_status():
         return result.rowcount
 
 
+def update_channel_geoblocked_status(channel_id: int, is_geoblocked: bool):
+    with engine.begin() as conn:
+        conn.execute(
+            text("UPDATE channels SET is_geoblocked = :geoblocked WHERE id = :id"),
+            {"geoblocked": is_geoblocked, "id": channel_id},
+        )
+
+
 def get_validation_summary(country_code: Optional[str] = None) -> dict:
     with engine.connect() as conn:
         if country_code:

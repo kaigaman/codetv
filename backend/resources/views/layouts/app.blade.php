@@ -104,6 +104,7 @@
                     <a href="{{ route('home') }}" class="text-sm text-codetv-200 hover:text-white transition">Home</a>
                     <a href="{{ route('uganda') }}" class="text-sm text-codetv-200 hover:text-white transition flex items-center gap-1"><span>🇺🇬</span> Uganda</a>
                     <a href="{{ route('sports') }}" class="text-sm text-codetv-200 hover:text-white transition"><i class="fas fa-futbol mr-1 text-codetv-400"></i> Sports</a>
+                    <a href="{{ route('worldcup') }}" class="text-sm text-yellow-400 hover:text-yellow-300 transition"><i class="fas fa-trophy mr-1"></i> World Cup</a>
                     <a href="{{ route('international') }}" class="text-sm text-codetv-200 hover:text-white transition"><i class="fas fa-globe mr-1 text-codetv-400"></i> Global</a>
                     <a href="{{ route('browse') }}" class="text-sm text-codetv-200 hover:text-white transition">Browse</a>
                     <a href="{{ route('guide') }}" class="text-sm text-codetv-200 hover:text-white transition"><i class="fas fa-calendar-alt mr-1"></i> Guide</a>
